@@ -22,11 +22,13 @@ Datasources are objects w/two keys, *entities* & *edges* (both are arrays of obj
 Usage
 -----
 ###*Instantiation*
+
 ```javascript
+// Initialise. If the database doesn't exist, it is created
 var startData = { 
   entities : [
-    { name: "Tom", type: "person", age: "28"},
-    { name: "Bob", type: "person"},
+    { name: "Tom", type: "person", age: "28", image: "http://img3.wikia.nocookie.net/__cb20120329233907/alcatraztv/images/2/22/2002_mugshot.jpg"},
+    { name: "Bob", type: "person", image: "http://images.amcnetworks.com/blogs.amctv.com/wp-content/uploads/2010/04/Krazy-8-Mugshot-760.jpg"},
     { name: "Tom\'s house", type: "place", location: "1234 1st St"},
     { name: "Tom\'s motorcycle", type: "thing", brand: "Honda"}
   ], edges : [
