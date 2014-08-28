@@ -21,6 +21,14 @@ Datasources are objects w/two keys, *entities* & *edges* (both are arrays of obj
 
 Methods
 -------
+###*constructor(name [, datasource])*
+_**Params:**_  
++ *name* - the localStorage key to use for caching database on the client.
++ *datasource* - datasource object to be added to the database.  
+
+_**Returns:**_  
+Success/fail as boolean.
+
 ###ingest(datasource)
 _**Params:**_  
 + *datasource* - datasource object to be added to the database.  
@@ -28,7 +36,7 @@ _**Params:**_
 _**Returns:**_  
 Success/fail as boolean.
 
-####create(object)
+###create(object)
 Creates a new entity in the database from o.  
 _**Params:**_  
 + *object* - entity object to be added to the database. Mandatory keys *name* & *type*  
@@ -36,7 +44,7 @@ _**Params:**_
 _**Returns:**_  
 Unique identifier for entity if successful, -1 if unsucessful.
 
-**read(key*[,values]*)**
+###read(key *[,values]*)
 _**Params:**_  
 + key - the desired index key for returned object array
 + value *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param  
@@ -44,18 +52,18 @@ _**Params:**_
 _**Returns:**_  
 Object array indexed by key param. If value param is supplied, only entities with key param value matcing the value param are included in the object array.
 
-**update(uid, object)**  
+###update(uid, object)
 _**Params:**_  
 _**Returns:**_  
 
-**delete(uid)**  
+###delete(uid)
 _**Params:**_  
 _**Returns:**_  
 
-**link(source, target, rel)**  
+###link(source, target, rel)
 _**Params:**_  
 _**Returns:**_  
 
-**delink(source, target, rel)**  
+###delink(source, target, rel)
 _**Params:**_  
 _**Returns:**_  
