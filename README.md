@@ -19,6 +19,23 @@ Datasources are objects w/two keys, *entities* & *edges* (both are arrays of obj
 *entities* contains objects with mandatory keys *name* & *type*  
 *edges* contains objects with keys *source*, *target*, *rel*
 
+Usage
+-----
+###*Instantiation*
+```javascript
+var startData = { 
+  entities : [
+    { name: "Tom", type: "person", age: "28"},
+    { name: "Bob", type: "person"},
+    { name: "Tom\'s house", type: "place", location: "1234 1st St"},
+    { name: "Tom\'s motorcycle", type: "thing", brand: "Honda"}
+  ], edges : [
+    { source: {type: 'person', name:'Tom'}, target: {name: "Tom\'s house", type: "place"}, rel: "residence"},
+    { source: {type: 'place', name:'Tom\'s house'}, target: {name: "Tom", type: "person"}, rel: "residence of"},
+    { source: {type: 'person', name:'Bob'}, target: {name: "Tom\'s house", type: "place"}, rel: "painted"}
+  ]};
+```
+
 Methods
 -------
 ###*constructor(name [, datasource])*
