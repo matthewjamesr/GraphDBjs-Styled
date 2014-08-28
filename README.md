@@ -5,6 +5,6 @@ GraphDBjs
 
 
 ####ToDo:
-+Add default hashCode algorithm
-+Implement byKey method on edges to return list of edges based on entitiy or relationship type
-+Implement areLinked method to determine if two entities are linked
++ Add default hashCode algorithm
++ Implement byKey method on edges to return list of edges based on entitiy or relationship type
++ Implement areLinked method to determine if two entities are linked
