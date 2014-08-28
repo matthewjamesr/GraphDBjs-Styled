@@ -111,6 +111,10 @@ function GraphDatabase(_name, ds){
   };
   this.read = function(key, value){
     var matches = _entities.read(key, value);
+    for (e in matches){
+      matches[e].ins = _edges.ins[ matches[e].uid];
+      matches[e].outs = _edges.outs[ matches[e].uid];
+    }
     return matches;
   }
   this.update = function (uid, o){
