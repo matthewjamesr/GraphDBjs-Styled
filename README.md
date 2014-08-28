@@ -2,28 +2,32 @@ GraphDBjs
 =========
 
 ####A simple implementation of a graph database on the client side using javascript
-The database provides two lists, entities and edges, and allows for CRUD actions on the database. Since this database is designed for use on the client in the browser, it is not designed to be ACID and does not rely on transactional modifications. 
+The database provides two lists, entities and edges, and allows for **CRUD** actions on the database. Since this database is designed for use on the client in the browser, it is not designed to be **ACID** and is not **transactional**. 
 
 ####ToDo:
-+ Finish README
++ Finish README.md
 + Add default hashCode algorithm
-+ Implement byKey method on edges to return list of edges based on entitiy or relationship type
-+ Implement areLinked method to determine if two entities are linked
++ Implement `.byKey(key)` method on edges to return list of edges based on entitiy or relationship type
++ Implement `.areLinked(entity1, entitiy2)` method to determine if two entities are linked
++ Add feature to allow the database to call methods when the database changes
 
 Datasource
 ----------
-A default datasource can be specified at instantiation, and/or can be ingested later when they become available. This allows for AJAX/JSON(P) calls to update the database in bulk rather than individul creations. The datasource is written to localStorage for faster load times through caching the last viewed datasource. If no datasource is specified at instantiation, the database will check localStorgae for a cached datasource. This allows for faster load and display times while waiting on AJAX/JSON(P) calls to return current datasource.  
+A default datasource can be specified at construction, or can be ingested later when it becomes available. This allows for AJAX/JSON(P) calls to update the database in bulk rather than individul creations. The datasource is written to localStorage for faster load times through caching the last viewed datasource. If no datasource is specified at construction, the database will check localStorgae for a cached datasource. This allows for faster load and display times while waiting on AJAX/JSON(P) calls to return current datasource.  
 **Format:**  
-`{entities:[{}], edges: [{}]}`  
-Datasources are objects w/two keys, *entities* & *edges* (both are arrays of objects)  
-*entities* contains objects with mandatory keys *name* & *type*  
-*edges* contains objects with keys *source*, *target*, *rel*
+`{ entities:[], edges: []} `  
+
+Datasources are objects w/two keys, `entities` & `edges` (both are arrays of objects).  
+`entities` array contains objects with mandatory keys `name` & `type`.  
+`edges` array contains objects with mandatory keys `source`, `target`, `rel`.  
 
 Usage
 -----
-###Instantiation
+###Initilization
+Databases can be created with the `new GraphDatabse(cacheName[, datasource])` constructor. At creation, the database can be initialized with data from a supplied datasource, or from a datasource cached in `localStorage`. If the default datasource is supplied, reading cached data from localStorage is skipped and the cache will be overwritten with the  supplied datasource.
+
 _**With datasource**_  
-Creating database with default datasource will skip reading cached data from localStorage and will overwrite the cached datasource with the new default datasource.
+Create new database with supplied datasource with the constructor `new GraphDatabase(cacheName, datasource)` an supplying both the `cacheName` and `datasource` parameters.
   
 ```javascript  
   // setup starting datasource named startData
@@ -44,7 +48,7 @@ Creating database with default datasource will skip reading cached data from loc
 ```
 
 _**Without datasource**_  
-Creating database without datasource will read cached from localStorage, if available.
+Create new database without datasource with the constructor `new GraphDatabase(cacheName)` omitting the `datasource` parameter.
 
 ```javascript
   var testDB = new GraphDatabase('testData');
