@@ -24,7 +24,7 @@ Usage
 ###Instantiation
 _**With datasource**_
   
-```javascript  
+```language-javascript  
   // setup starting datasource named startData
   var startData = { 
   entities : [
