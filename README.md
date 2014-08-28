@@ -17,17 +17,37 @@ Datasources are objects w/two keys, *entities* & *edges* (both are arrays of obj
 *entities* contains objects with mandatory keys *name* & *type*  
 *edges* contains objects with keys *source*, *target*, *rel*
 
-####Key methods:
-**Create**  
+####Methods:
+**ingest**  
 _**Params:**_  
-o - object to be added to the database as entity. Mandatory keys *name* & *type*  
-Creates a new entity in the database from o.
+_**Returns:**_  
 
-#####Read
-**Params:**  
-key - the desired index key for returned object array
-value *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param
-**Returns:**  
+**create**  
+Creates a new entity in the database from o.  
+_**Params:**_  
++ *object* - entity object to be added to the database. Mandatory keys *name* & *type*  
+_**Returns:**_  
+Unique identifier for entity if successful, -1 if unsucessful.
+
+**read**
+_**Params:**_  
++ key - the desired index key for returned object array
++ value *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param
+_**Returns:**_  
 Object array indexed by key param. If value param is supplied, only entities with key param value matcing the value param are included in the object array.
-#####Update
-#####Delete
+
+**update**  
+_**Params:**_  
+_**Returns:**_  
+
+**delete**  
+_**Params:**_  
+_**Returns:**_  
+
+**link**  
+_**Params:**_  
+_**Returns:**_  
+
+**delink**  
+_**Params:**_  
+_**Returns:**_  
