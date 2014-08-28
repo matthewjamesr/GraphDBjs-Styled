@@ -10,7 +10,7 @@ The database provides two lists, entities and edges, and allows for CRUD actions
 + Implement areLinked method to determine if two entities are linked
 
 ####Datasource:
-A default datasource can be specified at instantiation, and/or can ingest datasources later when they become available. This allows for AJAX/JSON(P) calls to update the database in bulk rather than individul creations. The datasource is written to localStorage for faster load times through caching the last viewed datasource. If no datasource is specified at instantiation, the database will check localStorgae for a cached datasource. This allows for faster load and display times while waiting on AJAX/JSON(P) calls to return current datasource.  
+A default datasource can be specified at instantiation, and/or can be ingested later when they become available. This allows for AJAX/JSON(P) calls to update the database in bulk rather than individul creations. The datasource is written to localStorage for faster load times through caching the last viewed datasource. If no datasource is specified at instantiation, the database will check localStorgae for a cached datasource. This allows for faster load and display times while waiting on AJAX/JSON(P) calls to return current datasource.  
 **Format:**  
 {entities:[{}], edges: [{}]}  
 Datasources are objects w/two keys, *entities* & *edges* (both are arrays of objects)  
@@ -18,11 +18,14 @@ Datasources are objects w/two keys, *entities* & *edges* (both are arrays of obj
 *edges* contains objects with keys *source*, *target*, *rel*
 
 ####Methods:
-**ingest**  
+**ingest(datasource)**  
 _**Params:**_  
-_**Returns:**_  
++ *datasource* - datasource object to be added to the database.  
 
-**create**  
+_**Returns:**_  
+Success/fail as boolean.
+
+**create(object)**  
 Creates a new entity in the database from o.  
 _**Params:**_  
 + *object* - entity object to be added to the database. Mandatory keys *name* & *type*  
@@ -30,7 +33,7 @@ _**Params:**_
 _**Returns:**_  
 Unique identifier for entity if successful, -1 if unsucessful.
 
-**read**
+**read(key*[,values]*)**
 _**Params:**_  
 + key - the desired index key for returned object array
 + value *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param  
@@ -38,18 +41,18 @@ _**Params:**_
 _**Returns:**_  
 Object array indexed by key param. If value param is supplied, only entities with key param value matcing the value param are included in the object array.
 
-**update**  
+**update(uid, object)**  
 _**Params:**_  
 _**Returns:**_  
 
-**delete**  
+**delete(uid)**  
 _**Params:**_  
 _**Returns:**_  
 
-**link**  
+**link(source, target, rel)**  
 _**Params:**_  
 _**Returns:**_  
 
-**delink**  
+**delink(source, target, rel)**  
 _**Params:**_  
 _**Returns:**_  
