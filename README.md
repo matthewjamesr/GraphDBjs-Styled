@@ -18,8 +18,8 @@ Datasources are objects w/two keys, *entities* & *edges* (both are arrays of obj
 *edges* contains objects with keys *source*, *target*, *rel*
 
 ####Key methods:
-#####Create
-**Params:**  
+**Create**  
+_**Params:**_  
 o - object to be added to the database as entity. Mandatory keys *name* & *type*  
 Creates a new entity in the database from o.
 
