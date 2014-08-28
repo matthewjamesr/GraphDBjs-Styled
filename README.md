@@ -14,7 +14,7 @@ Datasource
 ----------
 A default datasource can be specified at instantiation, and/or can be ingested later when they become available. This allows for AJAX/JSON(P) calls to update the database in bulk rather than individul creations. The datasource is written to localStorage for faster load times through caching the last viewed datasource. If no datasource is specified at instantiation, the database will check localStorgae for a cached datasource. This allows for faster load and display times while waiting on AJAX/JSON(P) calls to return current datasource.  
 **Format:**  
-{entities:[{}], edges: [{}]}  
+`{entities:[{}], edges: [{}]}`  
 Datasources are objects w/two keys, *entities* & *edges* (both are arrays of objects)  
 *entities* contains objects with mandatory keys *name* & *type*  
 *edges* contains objects with keys *source*, *target*, *rel*
@@ -22,9 +22,10 @@ Datasources are objects w/two keys, *entities* & *edges* (both are arrays of obj
 Usage
 -----
 ###Instantiation
-_**With datasource**_
+_**With datasource**_  
+Creating database with default datasource will skip reading cached data from localStorage and will overwrite the cached datasource with the new default datasource.
   
-```language-javascript  
+```javascript  
   // setup starting datasource named startData
   var startData = { 
   entities : [
@@ -49,7 +50,9 @@ Creating database without datasource will read cached from localStorage, if avai
   var testDB = new GraphDatabase('testData');
 ```
 
-###Ingest Datasource
+###Ingesting a Datasource
+New datasources can be ingested into the database using the `.ingest()` method. Ingesting a datasource will add the data to the database, creating new entities if they do not exist or updating the exisiting ones. It will also create links between two entities if they are not already linked.  
+_**Note:** two entities can be linked multiple times with different relationships._
 
 ```javascript
   // create new datasource
@@ -67,6 +70,57 @@ Creating database without datasource will read cached from localStorage, if avai
   // ingest the new datasource
   testDB.ingest(newData);
 ```
+
+###Creating an new entitiy
+New entities can be created by calling the `.create()` method. If the entity already exists, no new entity is created.
+
+```javascript
+  testDB.create({
+    name: 'New Person',
+    type: 'person',
+    age: 25
+  });
+```
+
+###Reading entities
+Entities can be read by calling the `.read()` method which returns all matching entities in an object array. Each object contains arrays for edges in and out, i.e. `{uid: 'personJill', name: 'Jill', type: 'person', ins: [], outs: []}`.
+
+```javascript
+  // returns object array of all entities with name key, indexed by name
+  testDB.read('name');
+  
+  // returns only entities with name matching 'Jill' by supplying value as the second parameter
+  testDB.read('name', 'Jill');
+  
+  // alternatively, return all entities, then select 'Jill' by key
+  testDB.read('name')['Jill'];
+```
+
+Alternatively, entities can be read using the `.entities()` method. This method will return an object array containing all entities, indexed by uid. The entities do not contain edges, i.e. `{uid: 'personJill', name: 'Jill', type: 'person'}`.
+
+```javascript
+  testDB.entities()[]
+```
+
+_**Issue:** currently, both methods return entities with edges keys._
+
+###Updating an entitiy
+Entities can be updated by calling the `update` method.
+
+```javascript
+  // read entity named 'Jill'
+  var current = testDB.read('name', 'Jill');
+  current.age = 25;
+  var testDB.update(current.uid, current);
+```
+
+###Deleting an entitiy
+
+###Linking two entities
+
+###Delinking two entities
+
+
 
 Methods
 -------
