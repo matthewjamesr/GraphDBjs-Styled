@@ -1,35 +1,82 @@
 function GraphDatabase(_name, ds){
+  /*
+  *  ToDo: implement hashCode to get true unique identifier
+  *  --- for now it simply checks if there is a hashCode already
+  *  --- and if not then it creates one that simply returns the string
+  */
   window.String.prototype.hashCode = window.String.prototype.hashCode || function(){
     return this;
   }
   
+  /*
+  *  Gets hashCode based on entity type & name
+  */
   var _getHash = function(o){ return (o.type && o.name) ? (o.type + o.name).hashCode() : null; }
 
+  /*
+  *  Checks if user supplied datasource
+  *  --- if so, make it the datasource
+  *  --- if not, create blank datasource
+  *  Note: datasource is an Object with 2 properties
+  *  --- entities & edges. Both are arrays of objects
+  */
   var _datasource = ds || {entities:[], edges:[]};
+  
+  var byKey = function(key, value){
+    var result = {},
+        dups = [];
+    for (e in this){
+      if (this[e][key] && !result[this[e][key]])
+        result[this[e][key]] = this[e];
+      else if (this[e][key] && $.inArray(this[e][key], dups) > -1)
+        result[this[e][key]][this[e].uid] = this[e];
+      else if (this[e][key]){
+        var first = result[this[e][key]];
+        delete result[this[e][key]];
+        result[this[e][key]] = {};
+        result[this[e][key]]['byKey'] = byKey;
+        result[this[e][key]][first.uid] = first;
+        result[this[e][key]][this[e].uid] = this[e];
+        dups.push(this[e][key]);
+      }
+    }
+    return typeof value === 'undefined' ? result : result[value];
+  }
+  
+  /*
+  *  Parses entities to object
+  *  --- indexed by Unique Identifier
+  *  @Params:
+  *  --- @e: array of objects
+  */
   var _parseEntities = function(e){
         var data = { uid: {}, name: {}, types: {}};
         for (var j = 0; j < e.length; j++){
           e[j].uid = _getHash(e[j]);
-          data.uid[e[j].uid] = e[j];
-          if (!data.name[e[j].name]) data.name[e[j].name] = [];
-            data.name[e[j].name].push(e[j]);
-          if (!data.types[e[j].type]) data.types[e[j].type] = [];
-          data.types[e[j].type].push(e[j]);
-          if (!data.types[e[j].type].name) data.types[e[j].type].name = {};
-          data.types[e[j].type].name[e[j].name] = e[j];
+          data[e[j].uid] = e[j];
         }
+        data.read = byKey;
         return data;
       },
+  /*
+  *  Sets private entities to returned object
+  */
       _entities = _parseEntities(_datasource.entities),
+  /*
+  *  Parses edges to object
+  *  --- indexed by Source and Target
+  *  @Params:
+  *  --- @e: array of objects
+  */
       _parseEdges = function(e){
         var edges = {ins: {}, outs: {}};
         for (var i = 0; i < e.length; i++){
           var tid = _getHash(e[i].target),
               sid = _getHash(e[i].source);
           if (!edges.ins[tid]) edges.ins[tid] = [];
-          edges.ins[tid].push({source: _entities.uid[sid], rel: e[i].rel});
+          edges.ins[tid].push({source: _entities[sid], rel: e[i].rel});
           if (!edges.outs[sid]) edges.outs[sid] = [];
-          edges.outs[sid].push({target: _entities.uid[tid], rel: e[i].rel});
+          edges.outs[sid].push({target: _entities[tid], rel: e[i].rel});
         }
         return edges;
       },
@@ -55,18 +102,17 @@ function GraphDatabase(_name, ds){
     _datasource.entities.push(o);
     
     //add to _entities    
-    _entities.uid[o.uid] = o;
-    _entities.name[o.name] = o;
-    if (!_entities.types[o.type]) _entities.types[o.type] = [];
-    _entities.types[o.type].push(o);
-    if (! _entities.types[o.type].name) _entities.types[o.type].name = {};
-    _entities.types[o.type].name[o.name] = o;
+    _entities[o.uid] = o;
     
     //return success
     _write(_name);
     return o.uid;
     
   };
+  this.read = function(key, value){
+    var matches = _entities.read(key, value);
+    return matches;
+  }
   this.update = function (uid, o){
     o.uid = uid;
     //edit in datasource entities
@@ -75,18 +121,7 @@ function GraphDatabase(_name, ds){
     if (e.length !== 1) return false;
     _datasource.entities[uid] = o;
     
-    //edit in _entities
-    var ex = _entities.uid[uid];
-    _entities.name[ex.name] = o;
-    var exType = $.grep(_entities.types[ex.type], function(e){ return e.uid == uid; }, true),
-        exTypeName = $.grep(_entities.types[ex.type].name[ex.name], function(e){ return e.uid == uid; }, true);
-    _entities.types[ex.type] = exType;
-    if (!_entities.types[o.type]) _entities.types[o.type] = [];
-    _entities.types[o.type].push(o);
-    if (!_entities.types[ex.type].name) _entities.types[ex.type].name = {};
-    _entities.types[ex.type].name[ex.name] = exTypeName;
-    if (! _entities.types[o.type].name) _entities.types[o.type].name = {};
-    _entities.types[o.type].name[o.name] = o;    
+    //edit in _entities  
     _entities.uid[uid] = o; 
     
     //return success
@@ -98,14 +133,7 @@ function GraphDatabase(_name, ds){
     _datasource.entities = $.grep(_datasource.entities, function(e){ return e.uid == uid; }, true);
     
     //remove from _entities
-    var ex = _entities.uid[uid];
-    var exType = $.grep(_entities.types[ex.type], function(e){ return e.uid == uid; }, true),
-        exTypeName = $.grep(_entities.types[ex.type].name[ex.name], function(e){ return e.uid == uid; }, true);
-    delete _entities.name[ex.name];    
-    _entities.types[ex.type] = exType;    
-    if (!_entities.types[ex.type].name) _entities.types[ex.type].name = {};
-    _entities.types[ex.type].name[ex.name] = exTypeName;
-    delete _entities.uid[uid]; 
+    delete _entities[uid]; 
     
     //return success/fail
     _write(_name);
@@ -127,11 +155,11 @@ function GraphDatabase(_name, ds){
     
     //add to _edges.ins
     if (!_edges.ins[tid]) _edges.ins[tid] = [];
-    _edges.ins[tid].push({source: _entities.uid[sid], rel: r});
+    _edges.ins[tid].push({source: _entities[sid], rel: r});
     
     //add to _edges.outs
     if (!_edges.outs[sid]) _edges.outs[sid] = [];
-    _edges.outs[sid].push({target: _entities.uid[tid], rel: r});
+    _edges.outs[sid].push({target: _entities[tid], rel: r});
     
     //return success/fail
     return true;
@@ -159,8 +187,8 @@ function GraphDatabase(_name, ds){
   this.ingest = function(ds){
     var db = this;
     ds.entities.forEach(function(v, i, a){
-      if (_entities.types[v.type] && _entities.types[v.type].name[v.name]){
-        var cur = _entities.types[v.type];
+      if (_entities.read('type',[v.type]) && _entities.read('type', [v.type]).byKey('name', [v.name])){
+        var cur = _entities.read('type',[v.type]);
         db.update(cur.uid, v);
       }else{
         db.create(v);
