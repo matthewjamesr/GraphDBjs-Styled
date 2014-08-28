@@ -21,14 +21,15 @@ Datasources are objects w/two keys, *entities* & *edges* (both are arrays of obj
 
 Usage
 -----
-###*Instantiation*
-
-```javascript
-// Initialise. If the database doesn't exist, it is created
-var startData = { 
+###Instantiation
+_**With datasource**_
+  
+```javascript  
+  // setup starting datasource named startData
+  var startData = { 
   entities : [
-    { name: "Tom", type: "person", age: "28", image: "http://img3.wikia.nocookie.net/__cb20120329233907/alcatraztv/images/2/22/2002_mugshot.jpg"},
-    { name: "Bob", type: "person", image: "http://images.amcnetworks.com/blogs.amctv.com/wp-content/uploads/2010/04/Krazy-8-Mugshot-760.jpg"},
+    { name: "Tom", type: "person", age: "28"},
+    { name: "Bob", type: "person"},
     { name: "Tom\'s house", type: "place", location: "1234 1st St"},
     { name: "Tom\'s motorcycle", type: "thing", brand: "Honda"}
   ], edges : [
@@ -36,6 +37,35 @@ var startData = {
     { source: {type: 'place', name:'Tom\'s house'}, target: {name: "Tom", type: "person"}, rel: "residence of"},
     { source: {type: 'person', name:'Bob'}, target: {name: "Tom\'s house", type: "place"}, rel: "painted"}
   ]};
+  
+  //create graph database with default datasource startData
+  var testDB = new GraphDatabase('testData', startData); 
+```
+
+_**Without datasource**_  
+Creating database without datasource will read cached from localStorage, if available.
+
+```javascript
+  var testDB = new GraphDatabase('testData');
+```
+
+###Ingest Datasource
+
+```javascript
+  // create new datasource
+  var newData = { 
+    entities : [
+      { name: "Jill", type: "person"}
+    ], edges : [
+      { source: {type: 'person', name:'Tom'}, target: {name: "Bob", type: "person"}, rel: "paid"},
+      { source: {type: 'person', name:'Tom'}, target: {name: "Tom\'s motorcycle", type: "thing"}, rel: "owns"},
+      { source: {type: 'thing', name:'Tom\'s motorcycle'}, target: {name: "Tom", type: "person"}, rel: "owned by"},
+      { source: {type: 'person', name:'Tom'}, target: {name: "Jill", type: "person"}, rel: "married to"},
+      { source: {type: 'person', name:'Jill'}, target: {name: "Tom", type: "person"}, rel: "married to"}
+  ]};
+  
+  // ingest the new datasource
+  testDB.ingest(newData);
 ```
 
 Methods
