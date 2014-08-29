@@ -13,6 +13,18 @@ function GraphDatabase(_name, ds){
   */
   var _getHash = function(o){ return (o.type && o.name) ? (o.type + o.name).hashCode() : null; }
 
+  var _clone = function(obj){
+    var result = {};
+    for (k in obj){
+      if (obj.hasOwnProperty(k)){
+        /*if (typeof obj[k] === 'object' && !obj[k] insanceof 'Array')
+          _clone(obj[k]);*/
+        result[k] = $.parseJSON(JSON.stringify(obj[k]));
+      }
+    }
+    return result;
+  }
+  
   /*
   *  Checks if user supplied datasource
   *  --- if so, make it the datasource
@@ -50,10 +62,10 @@ function GraphDatabase(_name, ds){
   *  --- @e: array of objects
   */
   var _parseEntities = function(e){
-        var data = { uid: {}, name: {}, types: {}};
+        var data = {};
         for (var j = 0; j < e.length; j++){
           e[j].uid = _getHash(e[j]);
-          data[e[j].uid] = e[j];
+          data[e[j].uid] = _clone(e[j]);
         }
         data.read = byKey;
         return data;
@@ -110,12 +122,18 @@ function GraphDatabase(_name, ds){
     
   };
   this.read = function(key, value){
-    var matches = _entities.read(key, value);
-    for (e in matches){
-      matches[e].ins = _edges.ins[ matches[e].uid];
-      matches[e].outs = _edges.outs[ matches[e].uid];
+    var matches = _entities.read(key, value),
+        results = _clone(matches);
+    if (results.uid){
+      results.ins = _edges.ins[results.uid];
+      results.outs = _edges.outs[results.uid];
+    }else{
+      for (e in results){
+        results[e].ins = _edges.ins[ results[e].uid];
+        results[e].outs = _edges.outs[ results[e].uid];
+      }
     }
-    return matches;
+    return results;
   }
   this.update = function (uid, o){
     o.uid = uid;
