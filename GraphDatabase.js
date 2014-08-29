@@ -194,10 +194,10 @@ function GraphDatabase(_name, ds){
     _datasource.edges = $.grep(_datasource.edges, function(e){ return (e.source == sid && e.target == tid && e.rel == r); }, true);
     
     //remove from to _edges.ins
-    _edges.ins[t] = $.grep(_edges.ins[t], function(e){ return (e.source.uid == sid && e.rel == r); }, true);
+    _edges.ins[tid] = $.grep(_edges.ins[tid], function(e){ return (e.source.uid == sid && e.rel == r); }, true);
     
     //remove from to _edges.outs
-    _edges.outs[s] = $.grep(_edges.outs[s], function(e){ return (e.target.uid == tid && e.rel == r); }, true);
+    _edges.outs[sid] = $.grep(_edges.outs[sid], function(e){ return (e.target.uid == tid && e.rel == r); }, true);
     
     //return success/fail
     _write(_name);
