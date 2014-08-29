@@ -173,20 +173,17 @@ function GraphDatabase(_name, ds){
   //   t: target object 
   //    props:  name & type
   //   rel: relationship
-  this.link = function(s, t, r){
-    //get hash codes
-    var tid = _getHash(t),
-        sid = _getHash(s);
+  this.link = function(sid, tid, rel){
     //add to datasource.edges
-    _datasource.edges.push({source: sid, target: tid, rel: r});
+    _datasource.edges.push({source: sid, target: tid, rel: rel});
     
     //add to _edges.ins
     if (!_edges.ins[tid]) _edges.ins[tid] = [];
-    _edges.ins[tid].push({source: _entities[sid], rel: r});
+    _edges.ins[tid].push({source: _entities[sid], rel: rel});
     
     //add to _edges.outs
     if (!_edges.outs[sid]) _edges.outs[sid] = [];
-    _edges.outs[sid].push({target: _entities[tid], rel: r});
+    _edges.outs[sid].push({target: _entities[tid], rel: rel});
     
     //return success/fail
     return true;
@@ -205,11 +202,6 @@ function GraphDatabase(_name, ds){
     //return success/fail
     _write(_name);
     return true;
-  };
-  this.refresh = function(ds){
-    _datasource = ds;
-    _entities = _parseEntities(_datasource.entities);
-    _edges = _parseEdges(_datasource.edges);
   };
   this.ingest = function(ds){
     var db = this;
@@ -232,9 +224,9 @@ function GraphDatabase(_name, ds){
         for (var i = 0; i < ins.length; i++){
           if (ins[i].source === sid && ins[i].rel === v.rel) exists = true;
         }
-        if (!exists) db.link(v.source, v.target, v.rel);
+        if (!exists) db.link(sid, tid, v.rel);
       }else{
-        db.link(v.source, v.target, v.rel);
+        db.link(sid, tid, v.rel);
       }
       //outs
     });
