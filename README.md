@@ -5,7 +5,7 @@ GraphDBjs
 The database provides two lists, entities and edges, and allows for _**CRUD**_ actions on the database. Since this database is designed for use on the client in the browser, it is not designed to be _**ACID**_ and is not _**transactional**_. 
 
 ####ToDo:
-+ Finish README.md
+
 + Add default hashCode algorithm
 + Implement `.byKey(key)` method on edges to return list of edges based on entitiy or relationship type
 + Implement `.areLinked(entity1, entitiy2)` method to determine if two entities are linked
@@ -136,56 +136,123 @@ Entities can be deleted by calling the `.delete()` method.
 ```
 
 ###Linking two entities
+Edges can be created by calling the `.link()` method.
+
+```javascript
+  // create 'Sam'
+  testDB.create({
+    name: 'Sam',
+    type: 'person'
+  });
+  
+  // read entity named 'Sam'
+  var person = testDB.read('name', 'Sam');
+  
+  // read entity named 'Tom'
+  var second = testDB.read('name', 'Tom');
+  
+  // link: (Tom)-[:knows]->(Sam)
+  testDB.link(second.uid, person.uid, 'knows');
+```
 
 ###Delinking two entities
+Edges can be deleted by calling the `.delink()` method.
+
+```javascript  
+  // read entity named 'Sam'
+  var person = testDB.read('name', 'Sam');
+  
+  // read entity named 'Tom'
+  var second = testDB.read('name', 'Tom');
+  
+  // delink: (Tom)-[:knows]->(Sam)
+  testDB.delink(second.uid, person.uid, 'knows');
+```
 
 
 
 Methods
 -------
-###*constructor(name [, datasource])*
+###constructor(name [, datasource])
+Creates a new `GraphDatabase` instance and initializes with data from `datasource` or `localStorage[name]`.  
+  
 _**Params:**_  
-+ *name* - the localStorage key to use for caching database on the client.  
-+ *datasource* - datasource object to be added to the database.  
+
++ `name` - the `localStorage` key to use for caching database on the client.  
++ `datasource` *(optional)* - datasource object to be used to initialize the database.  
+
+###.ingest(datasource)
+Ingests a new dataset into the database.  
+  
+_**Params:**_  
+
++ `datasource` - datasource object to be added to the database.  
 
 _**Returns:**_  
 Success/fail as boolean.
 
-###ingest(datasource)
+###.create(object)
+Creates a new entity in the database.  
+  
 _**Params:**_  
-+ *datasource* - datasource object to be added to the database.  
+
++ `object` - entity object to be added to the database. Mandatory keys *name* & *type*  
+
+_**Returns:**_  
+Unique identifier `.uid` for entity if successful, -1 if unsucessful.
+
+###.read(key *[,values]*)
+Reads entities from the database, indexed and filtered by the `key` & `value` parameters  
+  
+_**Params:**_  
+
++ `key` - the desired index key for returned object array  
++ `value` *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param  
+
+_**Returns:**_  
+Object array indexed by `key` param. If `value` param is supplied, the object array is filtered to only return matching entities. If the object array contains more than a single entity, it has a `.byKey()` method for further filtering.
+
+###.update(uid, object)
+Updates an entity in the database.  
+  
+_**Params:**_  
+
++ `uid` - the uniquie identifier of the entity to be updated
++ `object` - the new entity as an object  
 
 _**Returns:**_  
 Success/fail as boolean.
 
-###create(object)
-Creates a new entity in the database from o.  
+###.delete(uid)
+Deletes an entity in the database.  
+  
 _**Params:**_  
-+ *object* - entity object to be added to the database. Mandatory keys *name* & *type*  
+
++ `uid` - the uniquie identifier of the entity to be deleted  
 
 _**Returns:**_  
-Unique identifier for entity if successful, -1 if unsucessful.
+Success/fail as boolean.
 
-###read(key *[,values]*)
+###.link(source, target, rel)
+Creates edge from `source` entity to `target` entity with `rel` relationship. Entities can be linked by multiple edges with different realtionships.  
+  
 _**Params:**_  
-+ key - the desired index key for returned object array  
-+ value *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param  
+
++ `source` - unique identifier of the source entity
++ `target` - unique identifier of the target entity
++ `rel` - type of relationship
 
 _**Returns:**_  
-Object array indexed by key param. If value param is supplied, only entities with key param value matcing the value param are included in the object array.
+Success/fail as boolean.
 
-###update(uid, object)
+###.delink(source, target, rel)
+Deletes edge from `source` entity to `target` entity with `rel` relationship. If the two entities are linked by multiple edges, only the edge with the `rel` realtionship will be deleted.  
+  
 _**Params:**_  
-_**Returns:**_  
 
-###delete(uid)
-_**Params:**_  
-_**Returns:**_  
++ `source` - unique identifier of the source entity
++ `target` - unique identifier of the target entity
++ `rel` - type of relationship
 
-###link(source, target, rel)
-_**Params:**_  
 _**Returns:**_  
-
-###delink(source, target, rel)
-_**Params:**_  
-_**Returns:**_  
+Success/fail as boolean.
