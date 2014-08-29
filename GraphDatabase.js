@@ -124,7 +124,7 @@ function GraphDatabase(_name, ds){
   this.read = function(key, value){
     var matches = _entities.read(key, value),
         results = _clone(matches);
-    if (results.uid){
+    if (results.uid && _edges.ins[results.uid]){
       results.ins = _edges.ins[results.uid];
       results.outs = _edges.outs[results.uid];
     }else{
@@ -135,16 +135,21 @@ function GraphDatabase(_name, ds){
     }
     return results;
   }
-  this.update = function (uid, o){
+  this.update = function (uid, obj){
+    var o = _clone(obj);
     o.uid = uid;
     //edit in datasource entities
     if (!o.name || !o.type) return false;
     var e = $.grep(_datasource.entities, function(e){ return e.uid == uid; });
     if (e.length !== 1) return false;
+    if (o.ins)
+      delete o.ins;
+    if (o.outs)
+      delete o.outs;
     _datasource.entities[uid] = o;
     
     //edit in _entities  
-    _entities.uid[uid] = o; 
+    _entities[uid] = o; 
     
     //return success
     _write(_name);
