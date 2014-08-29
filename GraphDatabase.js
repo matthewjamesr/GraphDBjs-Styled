@@ -186,8 +186,8 @@ function GraphDatabase(_name, ds){
     _edges.outs[sid].push({target: _entities[tid], rel: rel});
     
     //return success/fail
-    return true;
     _write(_name);
+    return true;
   };
   this.delink = function(sid, tid, r){
     //remove from datasource.edges
@@ -206,8 +206,8 @@ function GraphDatabase(_name, ds){
   this.ingest = function(ds){
     var db = this;
     ds.entities.forEach(function(v, i, a){
-      if (_entities.read('type',[v.type]) && _entities.read('type', [v.type]).byKey('name', [v.name])){
-        var cur = _entities.read('type',[v.type]);
+      var cur = db.read('uid', _getHash(v));
+      if (cur.uid){
         db.update(cur.uid, v);
       }else{
         db.create(v);
