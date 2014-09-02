@@ -134,7 +134,7 @@ function GraphDatabase(_name, ds){
       results.ins = _edges.ins[results.uid];
       results.outs = _edges.outs[results.uid];
     }else{
-      for (var e in results){
+      for (e in results){
         results[e].ins = _edges.ins[ results[e].uid];
         results[e].outs = _edges.outs[ results[e].uid];
       }
