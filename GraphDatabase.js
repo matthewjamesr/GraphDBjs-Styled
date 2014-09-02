@@ -105,7 +105,7 @@ function GraphDatabase(_name, ds){
   
   this.entities = function(){return _entities; };
   this.edges = function(){ return _edges; }; 
-  this.create = function(o){
+  this.create = function(o, callback){
     //o.uid = _datasource.entities.length; _getHash(e[j])
     //add to datasource entities
     if (!o.name || !o.type) return -1;
@@ -118,10 +118,16 @@ function GraphDatabase(_name, ds){
     
     //return success
     _write(_name);
-    return o.uid;
+    if (callback)
+      return callback(_clone(o));
+    else
+      return o.uid;
     
   };
-  this.read = function(key, value){
+  this.read = function(args){
+    var key = args.key,
+        value = args.value,
+        callback = args.callback;
     var matches = _entities.read(key, value),
         results = _clone(matches);
     if (results.uid && _edges.ins[results.uid]){
@@ -133,9 +139,13 @@ function GraphDatabase(_name, ds){
         results[e].outs = _edges.outs[ results[e].uid];
       }
     }
-    return results;
+    if (callback)
+      return callback(results);
+    else
+      return results;
   }
-  this.update = function (uid, obj){
+  this.update = function (uid, obj, callback){
+    if (!uid || !obj) return false;
     var o = _clone(obj);
     o.uid = uid;
     //edit in datasource entities
@@ -153,7 +163,10 @@ function GraphDatabase(_name, ds){
     
     //return success
     _write(_name);
-    return true;
+    if (callback)
+        return callback(_clone(_entities[uid]));
+    else
+      return true;
   };
   this.delete = function(uid){
     //remove from datasource entities
