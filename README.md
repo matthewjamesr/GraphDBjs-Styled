@@ -219,37 +219,40 @@ _**Params:**_
 _**Returns:**_  
 Success/fail as boolean.
 
-###.create(object)
+###.create(object *[,callback]*)
 Creates a new entity in the database.  
   
 _**Params:**_  
 
 + `object` - entity object to be added to the database. Mandatory keys *name* & *type*  
++ `callback` *(optional)* - callback to be executed after the entity is created. The new entitiy is passed as the single argument to the callback function.  
 
 _**Returns:**_  
 Unique identifier `.uid` for entity if successful, -1 if unsucessful.
 
-###.read(key *[,values]*)
-Reads entities from the database, indexed and filtered by the `key` & `value` parameters  
+###.read(args)
+Reads entities from the database, indexed and filtered by the `key` & `value` parameters.  
   
-_**Params:**_  
+_**Params: (as keeys of an object)**_  
 
 + `key` - the desired index key for returned object array  
 + `value` *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param  
++ `callback` *(optional)* - the function to execute with the returned record set. The recordset (default return value below) is passed as the single argument to the callback function.  
 
 _**Returns:**_  
-Object array indexed by `key` param. If `value` param is supplied, the object array is filtered to only return matching entities. If the object array contains more than a single entity, it has a `.byKey()` method for further filtering.
+ The value returned by the callback, if supplied. If no callback is supplied, the default return is an object array indexed by `key` param. If `value` param is supplied, the object array is filtered to only return matching entities. If the object array contains more than a single entity, it has a `.byKey()` method for further filtering.
 
-###.update(uid, object)
+###.update(uid, object [,callback])
 Updates an entity in the database.  
   
 _**Params:**_  
 
 + `uid` - the uniquie identifier of the entity to be updated
 + `object` - the new entity as an object  
++ `callback` *(optional)* - callback to be executed after the entity is updated. The updated entity is passed as the single argument to the callback function.  
 
 _**Returns:**_  
-Success/fail as boolean.
+Success/fail as boolean or the value returned by the callback, if supplied.
 
 ###.delete(uid)
 Deletes an entity in the database.  
