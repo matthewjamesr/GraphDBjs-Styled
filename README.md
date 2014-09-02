@@ -5,11 +5,10 @@ GraphDBjs
 The database provides two lists, entities and edges, and allows for _**CRUD**_ actions on the database. Since this database is designed for use on the client in the browser, it is not designed to be _**ACID**_ and is not _**transactional**_. 
 
 ####ToDo:
-
 + Add default hashCode algorithm
 + Implement `.byKey(key)` method on edges to return list of edges based on entitiy or relationship type
 + Implement `.areLinked(entity1, entitiy2)` method to determine if two entities are linked
-+ Add feature to allow the database to call methods when the database changes
++ Add feature to allow the database to call methods when the database changes (partially complete, callbacks on create, read, and update probably satisify this)
 
 Datasource
 ----------
@@ -79,9 +78,13 @@ _**Note:** two entities can be linked multiple times with different relationship
 New entities can be created by calling the `.create()` method. If the entity already exists, no new entity is created.
 
 ```javascript
-  testDB.create({
-    name: 'Sam',
-    type: 'person'
+  // create new entitiy
+  testDB.create({ name: 'Sam', type: 'person' });
+  
+  // alternatively, you can supply a callback to execute when the creation is complete
+  testDB.create({ name: 'Sam', type: 'person' }, function(entity){
+    console.log(JSON.stringify(entity));
+    return true; // the return value from the callback will be returned by the .create() method
   });
 ```
 
@@ -90,20 +93,37 @@ Entities can be read by calling the `.read()` method which returns all matching 
 
 ```javascript
   // returns object array of all entities with name key, indexed by name
-  testDB.read('name');
+  testDB.read({ key: 'name' });
   
   // returns only entities with name matching 'Jill' by supplying value as the second parameter
-  testDB.read('name', 'Jill');
+  testDB.read({ 
+    key: 'name',
+    value: 'Jill'
+  }); 
+    
+  // you can also supply a callback
+  testDB.read({ 
+    key: 'name',
+    value: 'Jill',
+    callback: function(result){
+      console.log(result.name);
+      return true;
+    }
+  });
   
-  // alternatively, return all entities, then select 'Jill' by key
-  testDB.read('name')['Jill'];
+  // you can also return all entities, then select 'Jill' by the index key
+  var all = testDB.read({ key: 'name' });
+  console.log( all['Jill'] );
 ```
 
 Alternatively, entities can be read using the `.entities()` method. This method will return an object array containing all entities, indexed by uid. The entities do not contain edges, i.e. `{uid: 'personJill', name: 'Jill', type: 'person'}`.
 
 ```javascript
   // read entity named 'Jill'
-  var person = testDB.read('name', 'Jill');
+  var person = testDB.read({ 
+    key: 'name', 
+    value: 'Jill'
+  });
   
   // get 'Jill' entity
   testDB.entities()[person.uid]
@@ -115,13 +135,21 @@ Entities can be updated by calling the `.update()` method.
 
 ```javascript
   // read entity named 'Sam'
-  var person = testDB.read('name', 'Sam');
+  var person = testDB.read({
+    key: 'name',
+    value: 'Sam'
+  });
   
   // change the age for 'Sam'
   person.age = 25;
   
   // update 'Sam' in the database
   testDB.update(person.uid, person);
+  
+  // you can also provide a callback to execute after the update
+  testDB.update(person.uid, person, function(entity){
+    console.log(entity.age);
+  });
 ```
 
 ###Deleting an entitiy
