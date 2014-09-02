@@ -219,7 +219,10 @@ function GraphDatabase(_name, ds){
   this.ingest = function(ds){
     var db = this;
     ds.entities.forEach(function(v, i, a){
-      var cur = db.read('uid', _getHash(v));
+      var cur = db.read({
+        key: 'uid',
+        value: _getHash(v)
+      });
       if (cur.uid){
         db.update(cur.uid, v);
       }else{
@@ -241,7 +244,6 @@ function GraphDatabase(_name, ds){
       }else{
         db.link(sid, tid, v.rel);
       }
-      //outs
     });
   };
 }
