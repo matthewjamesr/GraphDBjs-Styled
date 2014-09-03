@@ -93,40 +93,37 @@ Entities can be read by calling the `.read()` method which returns all matching 
 
 ```javascript
   // returns object array of all entities with name key, indexed by name
-  testDB.read({ key: 'name' });
+  testDB.read({ key: 'name', callback: function(recordSet) {
+      var entity = null;
+      for (entity in recordSet) {
+        // do something with the entities
+      }
+    }
+  });
   
-  // returns only entities with name matching 'Jill' by supplying value as the second parameter
-  testDB.read({ 
-    key: 'name',
-    value: 'Jill'
-  }); 
-    
-  // you can also supply a callback
-  testDB.read({ 
-    key: 'name',
-    value: 'Jill',
-    callback: function(result){
-      console.log(result.name);
-      return true;
+  // returns only entities with name matching 'Jill' by supplying value
+  testDB.read({ key: 'name', value: 'Jill', callback: function(entity) {
+      // do something with 'Jill'
     }
   });
   
   // you can also return all entities, then select 'Jill' by the index key
-  var all = testDB.read({ key: 'name' });
-  console.log( all['Jill'] );
+  testDB.read({ key: 'name', callsign: function(recordSet) {
+      console.log( recordSet['Jill'] ); // do something with 'Jill'
+    }
+  });
 ```
 
 Alternatively, entities can be read using the `.entities()` method. This method will return an object array containing all entities, indexed by uid. The entities do not contain edges, i.e. `{uid: 'personJill', name: 'Jill', type: 'person'}`.
 
 ```javascript
   // read entity named 'Jill'
-  var person = testDB.read({ 
-    key: 'name', 
-    value: 'Jill'
+  testDB.read({ key: 'name', value: 'Jill', callback: function(entity){
+      console.Log(testDB.entities()[entity.uid]); // get 'Jill' entity without edges
+    }
   });
   
-  // get 'Jill' entity
-  testDB.entities()[person.uid]
+  
 ```
 _**Note:** The object returned from the_ `.read()` _method contains ins & outs arrays as keys, creating circular referencing, and preventing the use of_ `JSON.stringify()`. _If the use of_ `JSON.stringify` _is needed, then the_ `.entities()` _method must be used._
 
@@ -135,20 +132,12 @@ Entities can be updated by calling the `.update()` method.
 
 ```javascript
   // read entity named 'Sam'
-  var person = testDB.read({
-    key: 'name',
-    value: 'Sam'
-  });
-  
-  // change the age for 'Sam'
-  person.age = 25;
-  
-  // update 'Sam' in the database
-  testDB.update(person.uid, person);
-  
-  // you can also provide a callback to execute after the update
-  testDB.update(person.uid, person, function(entity){
-    console.log(entity.age);
+  testDB.read({ key: 'name', value: 'Sam', callback: function(entity){
+      entity.age = 23; // modify 'Sam'
+      testDB.update(entity.uid, entity, function(updated){ // update 'Sam' in the database
+        console.log(updated.age); // do something with the updated entity
+      });
+    }
   });
 ```
 
@@ -157,10 +146,10 @@ Entities can be deleted by calling the `.delete()` method.
 
 ```javascript
   // read entity named 'Sam'
-  var person = testDB.read('name', 'Sam');
-  
-  // delete 'Sam'
-  testDB.delete(person.uid);
+  testDB.read({ key: 'name', value: 'Sam', callback: function (entity){
+      testDB.delete(entity.uid);  // delete 'Sam'
+    }
+  });
 ```
 
 ###Linking two entities
@@ -233,7 +222,7 @@ Unique identifier `.uid` for entity if successful, -1 if unsucessful.
 ###.read(args)
 Reads entities from the database, indexed and filtered by the `key` & `value` parameters.  
   
-_**Params: (as keeys of an object)**_  
+_**Params: (as keys of an object)**_  
 
 + `key` - the desired index key for returned object array  
 + `value` *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param  
