@@ -18,9 +18,10 @@ function GraphDatabase(_name, ds){
         k = null;;
     for (k in obj){
       if (obj.hasOwnProperty(k)){
-        /*if (typeof obj[k] === 'object' && !obj[k] insanceof 'Array')
-          _clone(obj[k]);*/
-        result[k] = $.parseJSON(JSON.stringify(obj[k]));
+        if (typeof obj[k] === 'function')
+          result[k] = obj[k];
+        else
+          result[k] = $.parseJSON(JSON.stringify(obj[k]));
       }
     }
     return result;
