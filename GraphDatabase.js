@@ -5,7 +5,7 @@ function GraphDatabase(_name, ds){
   *  --- and if not then it creates one that simply returns the string
   */
   window.String.prototype.hashCode = window.String.prototype.hashCode || function(){
-    return this;
+    return this.toString();
   }
   
   /*
