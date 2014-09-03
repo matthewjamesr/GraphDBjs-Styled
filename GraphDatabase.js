@@ -14,7 +14,8 @@ function GraphDatabase(_name, ds){
   var _getHash = function(o){ return (o.type && o.name) ? (o.type + o.name).hashCode() : null; }
 
   var _clone = function(obj){
-    var result = {};
+    var result = {},
+        k = null;;
     for (k in obj){
       if (obj.hasOwnProperty(k)){
         /*if (typeof obj[k] === 'object' && !obj[k] insanceof 'Array')
@@ -36,7 +37,8 @@ function GraphDatabase(_name, ds){
   
   var byKey = function(key, value){
     var result = {},
-        dups = [];
+        dups = [],
+        e = null;
     for (e in this){
       if (this[e][key] && !result[this[e][key]])
         result[this[e][key]] = this[e];
