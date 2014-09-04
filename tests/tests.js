@@ -61,12 +61,11 @@ QUnit.test('Read by Unique Identifier', function(assert){
     uid: 'personSam'};
   testDB.read({
     key: 'uid',
-    value: 'personSam',
-    callback: function (recordSet){
+    value: 'personSam'}, 
+    function (recordSet){
       assert.ok(true, 'Callback Success');
       assert.deepEqual(JSON.stringify(recordSet), JSON.stringify(sam), 'Read Success');
-    }
-  });
+    });
 });
 
 QUnit.test('Read by Name', function(assert){
@@ -77,12 +76,11 @@ QUnit.test('Read by Name', function(assert){
     uid: 'personSam'};
   testDB.read({
     key: 'name',
-    value: 'Sam',
-    callback: function (recordSet){
+    value: 'Sam'},
+    function (recordSet){
       assert.ok(true, 'Callback Success');
       assert.deepEqual(JSON.stringify(recordSet), JSON.stringify(sam), 'Read Success');
-    }
-  });
+    });
 });
 
 QUnit.test('Read by Type', function(assert){
@@ -93,42 +91,39 @@ QUnit.test('Read by Type', function(assert){
     uid: 'personSam'};
   testDB.read({
     key: 'type',
-    value: 'person',
-    callback: function (recordSet){
+    value: 'person'},
+    function (recordSet){
       assert.ok(true, 'Callback Success');
       console.log(recordSet);
       assert.deepEqual(JSON.stringify(recordSet.byKey('name', 'Sam')), JSON.stringify(sam), 'Read Success');
       console.log(recordSet.byKey('name', 'Sam'));
-    } 
-  });
+    });
 });
 
 QUnit.test('Update Entity', function(assert){
   expect(2);
   testDB.read({
     key: 'name',
-    value: 'Sam',
-    callback: function (entity){
+    value: 'Sam'},
+    function (entity){
       assert.ok(true, 'Callback Success');
       entity.age = 23;
       testDB.update(entity.uid, entity, function(updated){
         assert.deepEqual(updated, entity, 'Update Success');
       });
-    }
-  });
+    });
 });
 
 QUnit.test('Delete Entity', function(assert){
   expect(2);
   testDB.read({
     key: 'name',
-    value: 'Sam',
-    callback: function (entity){
+    value: 'Sam'},
+    function (entity){
       assert.ok(true, 'Callback Success');
       testDB.delete(entity.uid);
       assert.deepEqual({} , testDB.read({ key: 'name', value: 'Sam'}), 'Delete Success');
-    }
-  });
+    });
 });
 
 QUnit.test('Link Entities', function(assert) {
@@ -143,26 +138,24 @@ QUnit.test('Link Entities', function(assert) {
     testDB.link(Tom.uid, Sam.uid, 'knows');
     testDB.read({
       key: 'uid', 
-      value: Tom.uid, 
-      callback: function(Tom){
+      value: Tom.uid}, 
+      function(Tom){
         assert.ok(true, 'Callback 2 Success');
         for(var i = 0; i < Tom.outs.length; i++){
           console.log(Tom.outs[i].target.uid + '===?' + Sam.uid);
           if (Tom.outs[i].target.uid === Sam.uid)
             assert.ok(true, 'Link Success')
         }
-      }
-    });
+      });
   });
   
   //cleanup
   testDB.read({
     key: 'name',
-    value: 'Sam',
-    callback: function (entity){
+    value: 'Sam'},
+    function (entity){
       testDB.delete(entity.uid);
-    }
-  });
+    });
 });
 
 QUnit.test('Delink Entities', function(assert) {
@@ -177,8 +170,8 @@ QUnit.test('Delink Entities', function(assert) {
     testDB.delink(Tom.uid, Sam.uid, 'knows');
     testDB.read({
       key: 'uid', 
-      value: Tom.uid, 
-      callback: function(Tom){
+      value: Tom.uid}, 
+      function(Tom){
         assert.ok(true, 'Read Callback Success');
         var isLinked = false;
         for(var i = 0; i < Tom.outs.length; i++){
@@ -187,16 +180,14 @@ QUnit.test('Delink Entities', function(assert) {
             isLinked = true;
         }
         assert.ok(!isLinked, 'Delink Success');
-      }
-    });
+      });
   });
   
   //cleanup
   testDB.read({
     key: 'name',
-    value: 'Sam',
-    callback: function (entity){
+    value: 'Sam'},
+    function (entity){
       testDB.delete(entity.uid);
-    }
-  });
+    });
 });
