@@ -102,3 +102,29 @@ QUnit.test('Read by Type', function(assert){
     } 
   });
 });
+
+QUnit.test('Update Entity', function(assert){
+  testDB.read({
+    key: 'name',
+    value: 'Sam',
+    callback: function (entity){
+      assert.ok(true, 'Callback Success');
+      entity.age = 23;
+      testDB.update(entity.uid, entity, function(updated){
+        assert.deepEqual(updated, entity, 'Update Success');
+      });
+    }
+  });
+});
+
+QUnit.test('Delete Entity', function(assert){
+  testDB.read({
+    key: 'name',
+    value: 'Sam',
+    callback: function (entity){
+      assert.ok(true, 'Callback Success');
+      testDB.delete(entity.uid);
+      assert.deepEqual({} , testDB.read({ key: 'name', value: 'Sam'}), 'Delete Success');
+    }
+  });
+});
