@@ -74,7 +74,7 @@ _**Note:** two entities can be linked multiple times with different relationship
   testDB.ingest(newData);
 ```
 
-###Creating an new entitiy
+###Creating a new entity
 New entities can be created by calling the `.create()` method. If the entity already exists, no new entity is created.
 
 ```javascript
@@ -115,9 +115,8 @@ Alternatively, entities can be read using the `.entities()` method. This method 
 
 ```javascript
   // read entity named 'Jill'
-  testDB.read({ key: 'name', value: 'Jill', callback: function(entity){
-      console.Log(testDB.entities()[entity.uid]); // get 'Jill' entity without edges
-    }
+  testDB.read({ key: 'name', value: 'Jill'}, function(entity){
+    console.Log(testDB.entities()[entity.uid]); // get 'Jill' entity without edges
   });
   
   
@@ -129,12 +128,11 @@ Entities can be updated by calling the `.update()` method.
 
 ```javascript
   // read entity named 'Sam'
-  testDB.read({ key: 'name', value: 'Sam', callback: function(entity){
-      entity.age = 23; // modify 'Sam'
-      testDB.update(entity.uid, entity, function(updated){ // update 'Sam' in the database
-        console.log(updated.age); // do something with the updated entity
-      });
-    }
+  testDB.read({ key: 'name', value: 'Sam'}, function(entity){
+    entity.age = 23; // modify 'Sam'
+    testDB.update(entity.uid, entity, function(updated){ // update 'Sam' in the database
+      console.log(updated.age); // do something with the updated entity
+    });
   });
 ```
 
@@ -143,9 +141,8 @@ Entities can be deleted by calling the `.delete()` method.
 
 ```javascript
   // read entity named 'Sam'
-  testDB.read({ key: 'name', value: 'Sam', callback: function (entity){
-      testDB.delete(entity.uid);  // delete 'Sam'
-    }
+  testDB.read({ key: 'name', value: 'Sam'}, function (entity){
+    testDB.delete(entity.uid);  // delete 'Sam'
   });
 ```
 
@@ -154,33 +151,26 @@ Edges can be created by calling the `.link()` method.
 
 ```javascript
   // create 'Sam'
-  testDB.create({
-    name: 'Sam',
-    type: 'person'
+  testDB.create({ name: 'Sam', type: 'person' }, function(Sam){
+    // read entity named 'Tom'
+    testDB.read({key: 'name', value: 'Tom'}, function(Tom){
+      // link: (Tom)-[:knows]->(Sam)
+      testDB.link(Tom.uid, Sam.uid, 'knows');
+    });
   });
-  
-  // read entity named 'Sam'
-  var person = testDB.read('name', 'Sam');
-  
-  // read entity named 'Tom'
-  var second = testDB.read('name', 'Tom');
-  
-  // link: (Tom)-[:knows]->(Sam)
-  testDB.link(second.uid, person.uid, 'knows');
 ```
 
 ###Delinking two entities
 Edges can be deleted by calling the `.delink()` method.
 
 ```javascript  
-  // read entity named 'Sam'
-  var person = testDB.read('name', 'Sam');
-  
-  // read entity named 'Tom'
-  var second = testDB.read('name', 'Tom');
-  
-  // delink: (Tom)-[:knows]->(Sam)
-  testDB.delink(second.uid, person.uid, 'knows');
+  testDB.create({ name: 'Sam', type: 'person' }, function(Sam){
+    // read entity named 'Tom'
+    var Tom = testDB.read({key: 'name', value: 'Tom'}, function(Tom){
+      // delink: (Tom)-[:knows]->(Sam)
+      testDB.delink(Tom.uid, Sam.uid, 'knows');
+    });
+  });
 ```
 
 
@@ -216,13 +206,14 @@ _**Params:**_
 _**Returns:**_  
 Unique identifier `.uid` for entity if successful, -1 if unsucessful.
 
-###.read(args)
+###.read(args, callback)
 Reads entities from the database, indexed and filtered by the `key` & `value` parameters.  
   
-_**Params: (as keys of an object)**_  
+_**Params:**_  
 
-+ `key` - the desired index key for returned object array  
-+ `value` *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param  
++ `args` - an object with read options `key` & *`value` (optional)*: 
++ - `key` - the desired index key for returned object array  
++ - `value` *(optional)* - the desired value of returned object array. If ommited the returned object array will contain all entities with a key matching the key param, indexed by the key param  
 + `callback` *(optional)* - the function to execute with the returned record set. The recordset (default return value below) is passed as the single argument to the callback function.  
 
 _**Returns:**_  
@@ -234,7 +225,7 @@ Updates an entity in the database.
 _**Params:**_  
 
 + `uid` - the uniquie identifier of the entity to be updated
-+ `object` - the new entity as an object  
++ `object` - the updated entity as an object  
 + `callback` *(optional)* - callback to be executed after the entity is updated. The updated entity is passed as the single argument to the callback function.  
 
 _**Returns:**_  

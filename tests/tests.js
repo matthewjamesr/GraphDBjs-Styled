@@ -166,7 +166,7 @@ QUnit.test('Delink Entities', function(assert) {
     // read entity named 'Tom'
     var Tom = testDB.read({key: 'name', value: 'Tom'});
 
-    // link: (Tom)-[:knows]->(Sam)
+    // delink: (Tom)-[:knows]->(Sam)
     testDB.delink(Tom.uid, Sam.uid, 'knows');
     testDB.read({
       key: 'uid', 
