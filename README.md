@@ -93,24 +93,21 @@ Entities can be read by calling the `.read()` method which returns all matching 
 
 ```javascript
   // returns object array of all entities with name key, indexed by name
-  testDB.read({ key: 'name', callback: function(recordSet) {
-      var entity = null;
-      for (entity in recordSet) {
-        // do something with the entities
-      }
+  testDB.read({ key: 'name'}, function(recordSet) {
+    var entity = null;
+    for (entity in recordSet) {
+      // do something with the entities
     }
   });
   
   // returns only entities with name matching 'Jill' by supplying value
-  testDB.read({ key: 'name', value: 'Jill', callback: function(entity) {
-      // do something with 'Jill'
-    }
+  testDB.read({ key: 'name', value: 'Jill'}, function(entity) {
+    // do something with 'Jill'
   });
   
   // you can also return all entities, then select 'Jill' by the index key
-  testDB.read({ key: 'name', callsign: function(recordSet) {
-      console.log( recordSet['Jill'] ); // do something with 'Jill'
-    }
+  testDB.read({ key: 'name'}, function(recordSet) {
+    console.log( recordSet['Jill'] ); // do something with 'Jill'
   });
 ```
 
