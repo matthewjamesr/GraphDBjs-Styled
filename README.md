@@ -8,7 +8,7 @@ The database provides two lists, entities and edges, and allows for _**CRUD**_ a
 + Add default hashCode algorithm
 + Implement `.byKey(key)` method on edges to return list of edges based on entitiy or relationship type
 + Implement `.areLinked(entity1, entitiy2)` method to determine if two entities are linked
-+ Add feature to allow the database to call methods when the database changes (partially complete, callbacks on create, read, and update probably satisify this)
++ ~~Add feature to allow the database to call methods when the database changes~~ (partially complete, callbacks on create, read, and update probably satisify this)
 
 Datasource
 ----------
