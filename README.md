@@ -155,7 +155,9 @@ Edges can be created by calling the `.link()` method.
     // read entity named 'Tom'
     testDB.read({key: 'name', value: 'Tom'}, function(Tom){
       // link: (Tom)-[:knows]->(Sam)
-      testDB.link(Tom.uid, Sam.uid, 'knows');
+      testDB.link(Tom.uid, Sam.uid, 'knows', function(source){
+        // do something with source
+      });
     });
   });
 ```
@@ -241,7 +243,7 @@ _**Params:**_
 _**Returns:**_  
 Success/fail as boolean.
 
-###.link(source, target, rel)
+###.link(source, target, rel *[, callback]*)
 Creates edge from `source` entity to `target` entity with `rel` relationship. Entities can be linked by multiple edges with different realtionships.  
   
 _**Params:**_  
@@ -249,6 +251,7 @@ _**Params:**_
 + `source` - unique identifier of the source entity
 + `target` - unique identifier of the target entity
 + `rel` - type of relationship
++ `callback` *(optional)* - callback to be executed after the entities linked. The source entity with edges is passed as the single argument to the callback function.  
 
 _**Returns:**_  
 Success/fail as boolean.
