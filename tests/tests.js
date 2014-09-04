@@ -127,35 +127,28 @@ QUnit.test('Delete Entity', function(assert){
 });
 
 QUnit.test('Link Entities', function(assert) {
-  expect(3);
+  expect(2);
   // create 'Sam'
   testDB.create({ name: 'Sam', type: 'person' }, function(Sam){
-    assert.ok(true, 'Callback 1 Success');
     // read entity named 'Tom'
     var Tom = testDB.read({key: 'name', value: 'Tom'});
 
     // link: (Tom)-[:knows]->(Sam)
-    testDB.link(Tom.uid, Sam.uid, 'knows');
-    testDB.read({
-      key: 'uid', 
-      value: Tom.uid}, 
-      function(Tom){
-        assert.ok(true, 'Callback 2 Success');
-        for(var i = 0; i < Tom.outs.length; i++){
-          console.log(Tom.outs[i].target.uid + '===?' + Sam.uid);
-          if (Tom.outs[i].target.uid === Sam.uid)
-            assert.ok(true, 'Link Success')
-        }
-      });
+    testDB.link(Tom.uid, Sam.uid, 'knows', function(source){
+      assert.ok(true, 'Callback Success');
+      for(var i = 0; i < source.outs.length; i++){
+        console.log(source.outs[i].target.uid + '===?' + Sam.uid);
+        if (source.outs[i].target.uid === Sam.uid)
+          assert.ok(true, 'Link Success')
+      }  
+    });
   });
+    
   
   //cleanup
-  testDB.read({
-    key: 'name',
-    value: 'Sam'},
-    function (entity){
-      testDB.delete(entity.uid);
-    });
+  testDB.read({ key: 'name', value: 'Sam'}, function (entity){
+    testDB.delete(entity.uid);
+  });
 });
 
 QUnit.test('Delink Entities', function(assert) {
