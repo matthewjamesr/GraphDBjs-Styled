@@ -189,7 +189,7 @@ function GraphDatabase(_name, ds){
   //   t: target object 
   //    props:  name & type
   //   rel: relationship
-  this.link = function(sid, tid, rel){
+  this.link = function(sid, tid, rel, callback){
     //add to datasource.edges
     _datasource.edges.push({source: sid, target: tid, rel: rel});
     
@@ -203,7 +203,10 @@ function GraphDatabase(_name, ds){
     
     //return success/fail
     _write(_name);
-    return true;
+    if (callback)
+      return callback(this.read({key: 'uid', value: sid}));
+    else
+      return true;
   };
   this.delink = function(sid, tid, r){
     //remove from datasource.edges
