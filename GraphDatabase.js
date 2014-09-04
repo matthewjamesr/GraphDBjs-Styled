@@ -127,10 +127,9 @@ function GraphDatabase(_name, ds){
       return o.uid;
     
   };
-  this.read = function(args){
+  this.read = function(args, callback){
     var key = args.key,
-        value = args.value,
-        callback = args.callback;
+        value = args.value;
     var matches = _entities.read(key, value),
         results = _clone(matches);
     if (results.uid && _edges.ins[results.uid]){
