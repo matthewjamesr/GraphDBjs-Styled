@@ -104,6 +104,7 @@ QUnit.test('Read by Type', function(assert){
 });
 
 QUnit.test('Update Entity', function(assert){
+  expect(2);
   testDB.read({
     key: 'name',
     value: 'Sam',
@@ -118,6 +119,7 @@ QUnit.test('Update Entity', function(assert){
 });
 
 QUnit.test('Delete Entity', function(assert){
+  expect(2);
   testDB.read({
     key: 'name',
     value: 'Sam',
@@ -125,6 +127,76 @@ QUnit.test('Delete Entity', function(assert){
       assert.ok(true, 'Callback Success');
       testDB.delete(entity.uid);
       assert.deepEqual({} , testDB.read({ key: 'name', value: 'Sam'}), 'Delete Success');
+    }
+  });
+});
+
+QUnit.test('Link Entities', function(assert) {
+  expect(3);
+  // create 'Sam'
+  testDB.create({ name: 'Sam', type: 'person' }, function(Sam){
+    assert.ok(true, 'Callback 1 Success');
+    // read entity named 'Tom'
+    var Tom = testDB.read({key: 'name', value: 'Tom'});
+
+    // link: (Tom)-[:knows]->(Sam)
+    testDB.link(Tom.uid, Sam.uid, 'knows');
+    testDB.read({
+      key: 'uid', 
+      value: Tom.uid, 
+      callback: function(Tom){
+        assert.ok(true, 'Callback 2 Success');
+        for(var i = 0; i < Tom.outs.length; i++){
+          console.log(Tom.outs[i].target.uid + '===?' + Sam.uid);
+          if (Tom.outs[i].target.uid === Sam.uid)
+            assert.ok(true, 'Link Success')
+        }
+      }
+    });
+  });
+  
+  //cleanup
+  testDB.read({
+    key: 'name',
+    value: 'Sam',
+    callback: function (entity){
+      testDB.delete(entity.uid);
+    }
+  });
+});
+
+QUnit.test('Delink Entities', function(assert) {
+  expect(3);
+  // create 'Sam'
+  testDB.create({ name: 'Sam', type: 'person' }, function(Sam){
+    assert.ok(true, 'Create Callback Success');
+    // read entity named 'Tom'
+    var Tom = testDB.read({key: 'name', value: 'Tom'});
+
+    // link: (Tom)-[:knows]->(Sam)
+    testDB.delink(Tom.uid, Sam.uid, 'knows');
+    testDB.read({
+      key: 'uid', 
+      value: Tom.uid, 
+      callback: function(Tom){
+        assert.ok(true, 'Read Callback Success');
+        var isLinked = false;
+        for(var i = 0; i < Tom.outs.length; i++){
+          console.log(Tom.outs[i].target.uid + '===?' + Sam.uid);
+          if (Tom.outs[i].target.uid === Sam.uid)
+            isLinked = true;
+        }
+        assert.ok(!isLinked, 'Delink Success');
+      }
+    });
+  });
+  
+  //cleanup
+  testDB.read({
+    key: 'name',
+    value: 'Sam',
+    callback: function (entity){
+      testDB.delete(entity.uid);
     }
   });
 });
