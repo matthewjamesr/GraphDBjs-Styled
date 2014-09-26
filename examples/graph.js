@@ -1,4 +1,7 @@
-var startData = { 
+//jQuery Actions//
+
+
+var startData = {
   entities : [
     { name: "Tom", type: "person", age: "28", image: "http://img3.wikia.nocookie.net/__cb20120329233907/alcatraztv/images/2/22/2002_mugshot.jpg"},
     { name: "Bob", type: "person", image: "http://images.amcnetworks.com/blogs.amctv.com/wp-content/uploads/2010/04/Krazy-8-Mugshot-760.jpg"},
@@ -9,7 +12,7 @@ var startData = {
     { source: {type: 'place', name:'Tom\'s house'}, target: {name: "Tom", type: "person"}, rel: "residence of"},
     { source: {type: 'person', name:'Bob'}, target: {name: "Tom\'s house", type: "place"}, rel: "painted"}
   ]};
-var newData = { 
+var newData = {
   entities : [
     { name: "Jill", type: "person"}
   ], edges : [
@@ -20,8 +23,8 @@ var newData = {
     { source: {type: 'person', name:'Jill'}, target: {name: "Tom", type: "person"}, rel: "married to"}
   ]};
 
-//test construtor 
-var testDB = new GraphDatabase('testData', startData); 
+//test construtor
+var testDB = new GraphDatabase('testData', startData);
 $('#main').append($('<div>', {id: 'graph'}));
 $('#main').append($('<div>', {id: 'output'}));
 //testDB.ingest(startData);
@@ -29,21 +32,21 @@ testDB.ingest(newData);
 
 //************Display Entity********************
 var person_tmpl = '\
-<img class="mugshot" src="{{image}}" alt="mugshot"></img>\
-<span style="float:left;"><strong>ID: </strong>{{uid}}<br/>\
+<div class="selectedContainer"><img class="mugshot" src="{{image}}" alt="mugshot"></img>\
+<span class="selectedEntity"><strong>ID: </strong>{{uid}}<br/>\
 <strong>Name: </strong>{{name}}<br/>\
 <strong>Type: </strong>{{type}}<br/>\
-<strong>Age: </strong>{{age}}</span>';
+<strong>Age: </strong>{{age}}</span></div>';
 var place_tmpl = '\
-<strong>ID: </strong>{{uid}}<br/>\
+<div class="selectedContainer"><strong>ID: </strong>{{uid}}<br/>\
 <strong>Name: </strong>{{name}}<br/>\
 <strong>Type: </strong>{{type}}<br/>\
-<strong>Location: </strong>{{location}}<br/>';
+<strong>Location: </strong>{{location}}<br/></div>';
 var thing_tmpl = '\
-<strong>ID: </strong>{{uid}}<br/>\
+<div class="selectedContainer"><strong>ID: </strong>{{uid}}<br/>\
 <strong>Name: </strong>{{name}}<br/>\
 <strong>Type: </strong>{{type}}<br/>\
-<strong>Brand: </strong>{{brand}}<br/>';
+<strong>Brand: </strong>{{brand}}<br/></div>';
 ich.addTemplate('person_tmpl', person_tmpl);
 ich.addTemplate('place_tmpl', place_tmpl);
 ich.addTemplate('thing_tmpl', thing_tmpl);
@@ -71,7 +74,7 @@ testDB.read({ key: 'name', value: 'Tom' }, function(Tom){
 
 //*************D3 Tree******************
 function buildTree(id, container){
-  var margin = {top: 0, right: 100, bottom: 0, left: 100},
+  var margin = {top: 70, right: 100, bottom: 0, left: 100},
       width = 300 - margin.right - margin.left,
       height = 500 - margin.top - margin.bottom;
 
@@ -211,7 +214,7 @@ function buildTree(id, container){
     });
   }
 
-  // Toggle children on click. 
+  // Toggle children on click.
   function click(d) {
     testDB.read({ key: 'uid', value: d.uid}, function(current){
       var out = [];
