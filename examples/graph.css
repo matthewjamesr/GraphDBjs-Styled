@@ -27,5 +27,5 @@ img.mugshot { height: 75px; float: left;display:inline-block; max-width:75px; ma
 }
 
 .selectedEntity {
-
+ position: relative;
 }
